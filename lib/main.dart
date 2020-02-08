@@ -1,35 +1,48 @@
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+
 import 'camera1.dart';
 
-void main() {
-  runApp(bottom_navigation());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
+  runApp(Bottom_Navigation_Bar());
 }
 
-class bottom_navigation extends StatelessWidget {
+class Bottom_Navigation_Bar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Bottom Navigation",
+      title: "Flutter Demo",
       home: HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int index1 = 0;
-  var home_color = [
-    Colors.yellow,
-    Colors.red,
-    Colors.blue,
-    Colors.limeAccent[400]
-  ];
+CameraController controller;
+ @override
+  void initState()  {
+    super.initState();
+    
+    controller=CameraController(cameras[0],ResolutionPreset.medium);
+    controller.initialize().then((_){
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        
+      });
+    });
+  }
+ 
 
+  int index = 0;
+  var home_color = [Colors.blue, Colors.cyan, Colors.green];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,44 +50,35 @@ class _HomePageState extends State<HomePage> {
         title: Text("Bottom Navigation"),
       ),
       body: Container(
-        color: home_color[index1],
+        color: home_color[index],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index1,
+        currentIndex: index,
         onTap: (int i) {
           setState(() {
-            index1 = i;
+            index = i;
           });
-          if (index1 == 1) {
+          if(index==1){
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => camera_run(),
+                  builder: (context) => CameraApp(controller),
                 ));
-                
           }
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text("Home"),
-            backgroundColor: Colors.yellow,
-          ),
+              icon: Icon(Icons.home),
+              title: Text("Home"),
+              backgroundColor: Colors.black),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
-            title: Text("Camera"),
-            backgroundColor: Colors.red,
-          ),
+              icon: Icon(Icons.camera),
+              title: Text("Camera"),
+              backgroundColor: Colors.black),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            title: Text("Chat"),
-            backgroundColor: Colors.blue,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            title: Text("Menu"),
-            backgroundColor: Colors.limeAccent[400],
-          ),
+              icon: Icon(Icons.chat),
+              title: Text("Chat"),
+              backgroundColor: Colors.black),
         ],
       ),
     );

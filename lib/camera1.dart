@@ -7,52 +7,26 @@ import 'package:path_provider/path_provider.dart';
 
 List<CameraDescription> cameras;
 
-void main() {
-  runApp(camera_run());
-}
-
-class camera_run extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Camera",
-      home: HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class CameraApp extends StatefulWidget {
+  CameraApp(this.controller);
   CameraController controller;
 
+  
   @override
-  void initState() async {
-    super.initState();
-    WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras();
-    controller = CameraController(cameras[0], ResolutionPreset.max);
-    controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-  }
+  _CameraAppState createState() => _CameraAppState();
+}
 
+class _CameraAppState extends State<CameraApp> {
+  
+
+  @override
   Widget build(BuildContext context) {
-    if (!controller.value.isInitialized) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+    if(!widget.controller.value.isInitialized){
+      return Center(child: CircularProgressIndicator());
     }
-
     return Scaffold(
         appBar: AppBar(title: Text('Take a picture')),
-        body: Container(child: CameraPreview(controller)),
+        body: Container(child: CameraPreview(widget.controller)),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.camera),
           onPressed: () async {
@@ -63,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                 (await getTemporaryDirectory()).path,
                 '${DateTime.now()}.png',
               );
-              await controller.takePicture(path);
+              await widget.controller.takePicture(path);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -76,10 +50,11 @@ class _HomePageState extends State<HomePage> {
           },
         ));
   }
-}
 
+}
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
+
   DisplayPictureScreen({Key key, this.imagePath}) : super(key: key);
 
   @override
